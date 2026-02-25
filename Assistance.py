@@ -1,13 +1,25 @@
+import os
 import speech_recognition as sr
 import pyttsx3
 from datetime import datetime
-import webbrowser
-import requests
-import random
+import webbrowser  # Pour ouvrir des sites
+import requests    # Pour API météo
+import random      # Pour blagues aléatoires
 
+# charge les variables d'environnement depuis .env (nécessite python-dotenv)
+from dotenv import load_dotenv
+load_dotenv()
+
+# Initialisation du moteur de parole
 engine = pyttsx3.init()
-engine.setProperty('rate', 150)
-engine.setProperty('volume', 1.0)
+engine.setProperty('rate', 150)  # Vitesse de parole
+engine.setProperty('volume', 1.0)  # Volume max
+# Pour une voix française, décommente et ajuste si besoin :
+# voices = engine.getProperty('voices')
+# for voice in voices:
+#     if 'french' in voice.name.lower():
+#         engine.setProperty('voice', voice.id)
+#         break
 
 print("🎤 Programme lancé → Je t'écoute en permanence !")
 print("Parle quand tu veux, je suis là... (dis 'arrête' pour quitter)")
@@ -40,8 +52,9 @@ with sr.Microphone() as source:
                 engine.say(response)
                 engine.runAndWait()
 
+            # Ouvre un site web
             elif "ouvre" in text_lower and "site" in text_lower:
-                site = text_lower.split("ouvre ")[-1].replace("site", "").strip()
+                site = text_lower.split("ouvre ")[-1].replace("site", "").strip()  # Ex: "ouvre google"
                 url = f"https://www.{site}.com"
                 webbrowser.open(url)
                 response = f"J'ouvre le site {site} pour toi !"
@@ -49,6 +62,7 @@ with sr.Microphone() as source:
                 engine.say(response)
                 engine.runAndWait()
 
+            # Raconte une blague
             elif "blague" in text_lower:
                 blagues = [
                     "Pourquoi les plongeurs plongent-ils toujours en arrière ? Parce que sinon ils tombent dans le bateau !",
@@ -61,9 +75,9 @@ with sr.Microphone() as source:
                 engine.say(response)
                 engine.runAndWait()
 
-            elif "météo" in text_lower:
-                ville = text_lower.split("météo ")[-1].strip() or "Paris"
-                api_key = "TA_CLE_API"  #API KEY
+            elif "météo" in text_lower or "temps":
+                ville = text_lower.split("météo ")[-1].strip() or "Paris"  # Défaut à Paris
+                api_key = os.getenv("API_KEY_METEO")  # récupérée depuis .env
                 url = f"http://api.openweathermap.org/data/2.5/weather?q={ville}&appid={api_key}&units=metric&lang=fr"
                 try:
                     data = requests.get(url).json()
@@ -79,6 +93,7 @@ with sr.Microphone() as source:
                 engine.say(response)
                 engine.runAndWait()
 
+            # Recherche web simple
             elif "cherche" in text_lower:
                 query = text_lower.split("cherche ")[-1].strip()
                 url = f"https://www.google.com/search?q={query.replace(' ', '+')}"
