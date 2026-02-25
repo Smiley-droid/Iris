@@ -6,3 +6,5 @@ Assistance local audiau et video
 pip install speechrecognition pyaudio        |Reconnaisance de la voix
 
 pip install pyttsx3                          |Lecture de la voix
+
+pip install requests                         |Meteo
